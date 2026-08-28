@@ -9,18 +9,25 @@
 
 Designed with a modern fintech dark-mode terminal layout (`#0F131A` canvas with `#1A2234` container cards), this project empowers analysts and investors to evaluate market performance, track historical shocks, and mathematically quantify underlying asset risk at a glance.
 
-![Dashboard Preview](assets/dashboard_preview.png)
+![Dashboard Preview](dashboard_preview.png)
+
+## 🎬 Interactive Dashboard Live Demo
+
+Here is a quick walkthrough showcasing the interactive date range filters, multi-asset trend analysis, and live volatility calculations in action:
+
+<img width="1326" height="724" alt="power bi gif" src="https://github.com/user-attachments/assets/e7ee4d6f-eca5-4056-b3b6-5b34ea48a2b9" />
 
 ---
 
 ## 🏗️ Table of Contents
 1. [Dataset & Data Source](#-dataset--data-source)
 2. [Project Architecture & Directory Structure](#-project-architecture--directory-structure)
-3. [Financial Concepts & Why We Built This](#-financial-concepts--why-we-built-this)
-4. [Data Cleaning & SQL Engineering](#-data-cleaning--sql-engineering)
-5. [Data Modeling & DAX Formulas (Power BI)](#-data-modeling--dax-formulas-power-bi)
-6. [Dashboard Architecture & Insights](#-dashboard-architecture--insights)
-7. [How to Run This Project](#-how-to-run-this-project)
+3. [Interactive Dashboard Live Demo](#-interactive-dashboard-live-demo)
+4. [Financial Concepts & Why We Built This](#-financial-concepts--why-we-built-this)
+5. [Data Cleaning & SQL Engineering](#-data-cleaning--sql-engineering)
+6. [Data Modeling & DAX Formulas (Power BI)](#-data-modeling--dax-formulas-power-bi)
+7. [Dashboard Architecture & Insights](#-dashboard-architecture--insights)
+8. [How to Run This Project](#-how-to-run-this-project)
 
 ---
 
@@ -42,8 +49,8 @@ The project relies on historical daily market data capturing global trading sess
 project-titan-terminal/
 │
 ├── README.md                      # Comprehensive technical report
-├── /assets/                       
-│   └── dashboard_preview.png      # Power BI terminal UI screenshot
+├── dashboard_preview.png      # Power BI terminal UI screenshot                       
+│   
 └── /sql/                          
     └── market_analysis_queries.sql # Data cleaning & transformation scripts
 ```
