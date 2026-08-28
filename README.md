@@ -46,16 +46,17 @@ project-titan-terminal/
 │   └── dashboard_preview.png      # Power BI terminal UI screenshot
 └── /sql/                          
     └── market_analysis_queries.sql # Data cleaning & transformation scripts
+```
 
 ##💡 Financial Concepts & Why We Built This
 If you are new to finance or looking at cross-asset analysis for the first time, this section explains the core thinking behind Project Titan:
 
-#1. What are Returns vs. Volatility?
+###1. What are Returns vs. Volatility?
 Daily Return: Measures the percentage shift in price from one day to the next (e.g., “Bitcoin went up 12.52% today”). It tells you the direction of movement.
 
 Volatility (Risk): Measures how violently or unpredictably an asset's prices bounce around. High volatility means severe risk and massive swings; low volatility means stability.
 
-#2. Why Compare Crypto Against Traditional Stock Indices (S&P 500 / NASDAQ)?
+###2. Why Compare Crypto Against Traditional Stock Indices (S&P 500 / NASDAQ)?
 In portfolio management, you never look at an asset in isolation.
 
 The S&P 500 is treated as the foundational baseline ("anchor") of traditional global finance because it represents steady economic health.
@@ -67,10 +68,10 @@ Why take the S&P 500 as the baseline? It allows us to measure how many times mor
 ##🧹 Data Cleaning & SQL Engineering
 Raw financial feeds required rigorous processing inside MySQL Workbench to handle missing values, date alignments, and scale differences.
 
-#1. Handling Schedule Discrepancies
+###1. Handling Schedule Discrepancies
 Crypto trades 24/7, while stock exchanges close on weekends. To prevent gaps and misalignment, data was cleaned and joined on a unified master timeline using an INNER JOIN on clean_date.
 
-#2. Normalizing Prices via Percentage Returns
+###2. Normalizing Prices via Percentage Returns
 Because Bitcoin trades in tens of thousands of dollars while the S&P 500 trades in thousands, comparing raw prices is impossible. We converted prices into Daily Percentage Returns using SQL window functions:
 
 SQL
@@ -94,14 +95,14 @@ WHERE trade_date IS NOT NULL AND trade_date != '';
 ##📐 Data Modeling & DAX Formulas (Power BI)
 To drive the interactive dashboard metrics, custom DAX measures were engineered inside Power BI Desktop:
 
-#1. Volatility Measurement (STDEV.P)
+###1. Volatility Measurement (STDEV.P)
 We calculated the population standard deviation of daily returns to quantify each asset's risk profile:
 BTC_Vol = STDEV.P(Fact_Sales[btc_return])
 ETH_Vol = STDEV.P(Fact_Sales[eth_return])
 NASDAQ_Vol = STDEV.P(Fact_Sales[nasdaq_return])
 SP500_Vol = STDEV.P(Fact_Sales[sp500_return])
 
-#2. Operational Metrics
+###2. Operational Metrics
 
 Total_Days_Analyzed = DISTINCTCOUNT(Fact_Sales[clean_date])
 Max_BTC_Spike = MAX(Fact_Sales[btc_return])
