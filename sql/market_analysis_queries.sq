@@ -1,0 +1,130 @@
+-- =========================================================================
+-- PROJECT TITAN: DATA ENGINEERING & SQL ANALYTICS PIPELINE
+-- =========================================================================
+
+-- PHASE 1: DATA AUDITING & INTEGRITY CHECKS
+-- Row Count & Date Range Check across all asset tables
+SELECT 'Bitcoin' AS asset, COUNT(*) AS total_rows, MIN(trade_date) AS min_date, MAX(trade_date) AS max_date FROM bitcoin_prices
+UNION ALL
+SELECT 'Ethereum', COUNT(*), MIN(trade_date), MAX(trade_date) FROM ethereum_prices
+UNION ALL
+SELECT 'NASDAQ', COUNT(*), MIN(trade_date), MAX(trade_date) FROM nasdaq_prices
+UNION ALL
+SELECT 'S&P 500', COUNT(*), MIN(trade_date), MAX(trade_date) FROM sp500_prices;
+
+-- Null & Missing Value Audit
+SELECT 'Bitcoin' AS asset_name, COUNT(*) AS total_rows, 
+       SUM(CASE WHEN close_price IS NULL THEN 1 ELSE 0 END) AS null_prices,
+       SUM(CASE WHEN volume IS NULL THEN 1 ELSE 0 END) AS null_volumes,
+       SUM(CASE WHEN trade_date IS NULL THEN 1 ELSE 0 END) AS null_dates
+FROM bitcoin_prices
+UNION ALL
+SELECT 'Ethereum', COUNT(*), 
+       SUM(CASE WHEN close_price IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN volume IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN trade_date IS NULL THEN 1 ELSE 0 END)
+FROM ethereum_prices
+UNION ALL
+SELECT 'NASDAQ', COUNT(*), 
+       SUM(CASE WHEN close_price IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN volume IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN trade_date IS NULL THEN 1 ELSE 0 END)
+FROM nasdaq_prices
+UNION ALL
+SELECT 'S&P 500', COUNT(*), 
+       SUM(CASE WHEN close_price IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN volume IS NULL THEN 1 ELSE 0 END),
+       SUM(CASE WHEN trade_date IS NULL THEN 1 ELSE 0 END)
+FROM sp500_prices;
+
+-- Sanity Check: Ensure no zero or negative prices exist
+SELECT * FROM bitcoin_prices WHERE close_price <= 0 OR high_price <= 0 OR low_price <= 0;
+
+
+-- =========================================================================
+-- PHASE 2: DATA TRANSFORMATION VIEWS (NORMALIZING DAILY RETURNS)
+-- =========================================================================
+
+-- Bitcoin Analytical View
+CREATE OR REPLACE VIEW vw_bitcoin_analytics AS
+SELECT  
+    STR_TO_DATE(trade_date, '%Y-%m-%d') AS clean_date,
+    CAST(close_price AS DECIMAL(12, 4)) AS close_price,
+    CAST(volume AS DECIMAL(20, 4)) AS volume,
+    LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+        OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d')) AS prev_close_price,
+    ROUND(
+        ((CAST(close_price AS DECIMAL(12, 4)) - LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) 
+        / LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) * 100, 
+    4) AS daily_return_pct
+FROM bitcoin_prices
+WHERE trade_date IS NOT NULL AND trade_date != '';
+
+-- Ethereum Analytical View
+CREATE OR REPLACE VIEW vw_ethereum_analytics AS
+SELECT  
+    STR_TO_DATE(trade_date, '%Y-%m-%d') AS clean_date,
+    CAST(close_price AS DECIMAL(12, 4)) AS close_price,
+    CAST(volume AS DECIMAL(20, 4)) AS volume,
+    LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+        OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d')) AS prev_close_price,
+    ROUND(
+        ((CAST(close_price AS DECIMAL(12, 4)) - LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) 
+        / LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) * 100, 
+    4) AS daily_return_pct
+FROM ethereum_prices
+WHERE trade_date IS NOT NULL AND trade_date != '';
+
+-- NASDAQ Analytical View
+CREATE OR REPLACE VIEW vw_nasdaq_analytics AS
+SELECT  
+    STR_TO_DATE(trade_date, '%Y-%m-%d') AS clean_date,
+    CAST(close_price AS DECIMAL(12, 4)) AS close_price,
+    CAST(volume AS DECIMAL(20, 4)) AS volume,
+    LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+        OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d')) AS prev_close_price,
+    ROUND(
+        ((CAST(close_price AS DECIMAL(12, 4)) - LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) 
+        / LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) * 100, 
+    4) AS daily_return_pct
+FROM nasdaq_prices
+WHERE trade_date IS NOT NULL AND trade_date != '';
+
+-- S&P 500 Analytical View
+CREATE OR REPLACE VIEW vw_sp500_analytics AS
+SELECT  
+    STR_TO_DATE(trade_date, '%Y-%m-%d') AS clean_date,
+    CAST(close_price AS DECIMAL(12, 4)) AS close_price,
+    CAST(volume AS DECIMAL(20, 4)) AS volume,
+    LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+        OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d')) AS prev_close_price,
+    ROUND(
+        ((CAST(close_price AS DECIMAL(12, 4)) - LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) 
+        / LAG(CAST(close_price AS DECIMAL(12, 4)), 1) 
+          OVER (ORDER BY STR_TO_DATE(trade_date, '%Y-%m-%d'))) * 100, 
+    4) AS daily_return_pct
+FROM sp500_prices
+WHERE trade_date IS NOT NULL AND trade_date != '';
+
+
+-- =========================================================================
+-- PHASE 3: MASTER CROSS-ASSET INTEGRATION VIEW
+-- =========================================================================
+CREATE OR REPLACE VIEW vw_market_master AS
+SELECT  
+    b.clean_date,
+    b.daily_return_pct AS btc_return,
+    e.daily_return_pct AS eth_return,
+    n.daily_return_pct AS nasdaq_return,
+    s.daily_return_pct AS sp500_return
+FROM vw_bitcoin_analytics b
+INNER JOIN vw_ethereum_analytics e ON b.clean_date = e.clean_date
+INNER JOIN vw_nasdaq_analytics n ON b.clean_date = n.clean_date
+INNER JOIN vw_sp500_analytics s ON b.clean_date = s.clean_date;
