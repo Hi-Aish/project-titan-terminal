@@ -27,7 +27,7 @@ Designed with a modern fintech dark-mode terminal layout (`#0F131A` canvas with 
 ## 📊 Dataset & Data Source
 The project relies on historical daily market data capturing global trading sessions. 
 
-* **Data Source:** [Global Stock Market Historical Data on Kaggle](https://www.kaggle.com/) (retrieved via automated scheduled pipelines querying the **Yahoo Finance API**).
+* **Data Source:** [Global Stock Market Historical Data on Kaggle]([https://www.kaggle.com/](https://www.kaggle.com/datasets/nitikachandel95/global-stock-market-data)) (retrieved via automated scheduled pipelines querying the **Yahoo Finance API**).
 * **Assets Tracked:**
   * **Bitcoin (BTC-USD):** The leading decentralized cryptocurrency.
   * **Ethereum (ETH-USD):** A major smart-contract blockchain asset.
